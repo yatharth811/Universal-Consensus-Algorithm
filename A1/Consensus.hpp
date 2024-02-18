@@ -1,13 +1,5 @@
 #pragma once
 
-#include <iostream>
-#include <thread>
-#include <random>
-
-std::random_device rd;
-std::mt19937 gen(rd());
-std::uniform_int_distribution<> distrib(50, 100);
-
 template<typename T> 
 class Consensus {
   public:
@@ -26,12 +18,12 @@ class Consensus {
     }
 
   public:
-    T* decide(T* prefer) {
-      auto sleep = distrib(gen);
-      std::this_thread::sleep_for(std::chrono::milliseconds(sleep));
-
-      // std::cout << id <<  " + " << *prefer << std::endl;
+    int winner{-1};
+    int helpId{-1};
+    T* decide(int id, int helpedId, T* prefer) {
       if (CAS(&original, 0, prefer)) {
+        winner = id;
+        helpId = helpedId;
         return prefer;
       }
       else {
